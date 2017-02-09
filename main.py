@@ -3,55 +3,138 @@ from random import *
 
 class BattleshipBot:
     def __init__(self):
-        self.bot_name = "I do have a dad vIRGIN"
+        self.bot_name = "Сука Блять"
         self.student_name = "Matthew Munger"
-        self.last_shot = "init"
-        self.coords = []
-        for a in range(0, 10):
-            for b in range(0, 10):
-                self.coords.append([a, b])
+        self.init()
 
     def get_move(self, hits, shots):
         """
         :param hits:
-        :param misses:
+        :param shots:
         :return:
         if last shot was sunk ship, random shot
         if last shot was miss, random shot
         if last shot was hit, shoots x + 1, x - 1, y + 1, y - 1
         """
+        # TODO: Find boat direction (f | !f)
+        # TODO: Shoot in a checkerboard fashion if random shot is required, must wait for 2 to be functional
+
         last = self.last_shot
         x = last[0]
         y = last[1]
         if last == "init" or hits[x][y] == 2:
+            print("Блять")
+            # print("last was sunk or init")
+            # if type(x) is not str:
+                # print("hits[x][y] (%s,%s) = %s" % (x, y, hits[x][y]))
+            self.tracking = False
+            # print("hits[x][y] == %s" % str(hits[x][y]))
+            self.count += 1
+            # print(shots)
+            # print("Last was sunk or init")
             target = choice(self.coords)
             return self.shoot(target)
         if hits[x][y] == 1:
+            print("Сука")
+            self.tracking = True
+            self.last_hit = [x, y]
+            # print("Lol eat my ass i hit u")
+            # print("last was hit")
             # last shot hit but didn't sink
-            if hits[x + 1] [y] == 0 and hits[x + 1][y] in self.coords:
-                return self.shoot([x + 1, y])
-            if hits[x - 1] [y] == 0 and hits[x - 1][y] in self.coords:
-                return self.shoot([x - 1, y])
-            if hits[x] [y + 1] == 0 and hits[x][y + 1] in self.coords:
-                return self.shoot([x, y + 1])
-            if hits[x] [y - 1] == 0 and hits[x][y - 1] in self.coords:
-                return self.shoot([x, y - 1])
+            a = x + 1
+            b = y
+            if self.exists([a, b]):
+                # print("exists")
+                # print(self.coords)
+                # print("hits[a][b] == [%s][%s]" % (a, b))
+                if [a, b] in self.coords:
+                    # print("hits[a][b] == [%s][%s]" % (a, b))
+                    if hits[a][b] == 0:
+                        # print("hits[a][b] == [%s][%s]" % (a, b))
+                        return self.shoot([a, b])
+            a = x - 1
+            b = y
+            if self.exists([a, b]):
+                # print("exists")
+                if [a, b] in self.coords:
+                    # print("hits[a][b] == [%s][%s]" % (a, b))
+                    if hits[a][b] == 0:
+                        # print("hits[a][b] == [%s][%s]" % (a, b))
+                        return self.shoot([a, b])
+            a = x
+            b = y + 1
+            if self.exists([a, b]):
+                # print("exists")
+                if [a, b] in self.coords:
+                    # print("hits[a][b] == [%s][%s]" % (a, b))
+                    if hits[a][b] == 0:
+                        # print("hits[a][b] == [%s][%s]" % (a, b))
+                        return self.shoot([a, b])
+            a = x
+            b = y - 1
+            if self.exists([a, b]):
+                # print("exists")
+                if [a, b] in self.coords:
+                    # print("hits[a][b] == [%s][%s]" % (a, b))
+                    if hits[a][b] == 0:
+                        # print("hits[a][b] == [%s][%s]" % (a, b))
+                        # print
+                        return self.shoot([a, b])
+            # print("last shot shit, shooting random...")
+            # print("Shooting random?")
+            return self.shoot(choice(self.coords))
+        else:
+            # print("last was miss")
+            if self.tracking:
+                # print("tracking...")
+                x = self.last_hit[0]
+                y = self.last_hit[1]
+                a = x + 1
+                b = y
+                if self.exists([a, b]):
+                    if hits[a][b] == 0 and [a, b] in self.coords:
+                        return self.shoot([a, b])
+                a = x - 1
+                b = y
+                if self.exists([a, b]):
+                    if hits[a][b] == 0 and [a, b] in self.coords:
+                        return self.shoot([a, b])
+                a = x
+                b = y + 1
+                if self.exists([a, b]):
+                    if hits[a][b] == 0 and [a, b] in self.coords:
+                        return self.shoot([a, b])
+                a = x
+                b = y - 1
+                if self.exists([a, b]):
+                    if hits[a][b] == 0 and [a, b] in self.coords:
+                        return self.shoot([a, b])
+                # print("last shot shit, shooting random...")
+                # print("tracking failed, resulting to random")
+                target = choice(self.coords)
+            else:
+                # print("random shot...")
+                target = choice(self.coords)
+            return self.shoot(target)
 
     def shoot(self, target):
         self.coords.remove(target)
         self.last_shot = target
         return target
 
+    def exists(self, target):
+        return target in self.board
+
     def get_setup(self):
         """
-        Fully random ship placements, without overlaps or boarder crossings.
+        Fully random ship placements, without overlaps, within the board.
         """
-        ls = [5, 4, 3, 3, 2]
+        self.init()
+        # TODO: Add gay var
+        ls = [2, 5, 4, 3, 3]
         ships = []
-        temp_ships = []
         occs = []
-        for temp_ship in ls:
-            l = temp_ship
+        for l in ls:
             a = self.new_ship(l, ships, occs)
             ships.append((l, a[0], a[1], a[2]))
             occs = a[3]
@@ -63,6 +146,9 @@ class BattleshipBot:
         max = 9 - l + 1
         temp_occs = []
         # TODO: Optimise f to have only one tree that separates later.
+        if l == 2:  # Add boat in last coord cuz yeah ppl be gay
+            temp_occs = [[9, 8], [9, 9]]
+            return 9, 8, 1, temp_occs
         if not f:
             x = randint(0, max)
             y = randint(0, 9)
@@ -125,8 +211,18 @@ class BattleshipBot:
                 no += 1
         print("Works: {0}, Fails: {1}, Works %: {2}".format(yes, no, yes / (yes + no) * 100))
 
+    def init(self):
+        self.last_shot = "init"
+        self.coords = []
+        for a in range(0, 10):
+            for b in range(0, 10):
+                self.coords.append([a, b])
+        self.board = self.coords
+        self.count = 0
+        self.tracking = False
+        self.last_hit = None
 
-ships = BattleshipBot().get_setup()
-print("ships = %s" % ships)
+# ships = BattleshipBot().get_setup()
+# print("ships = %s" % ships)
 
-BattleshipBot().success_checker()
+# BattleshipBot().success_checker()
