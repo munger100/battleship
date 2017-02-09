@@ -9,12 +9,7 @@ class BattleshipBot:
 
     def get_move(self, hits, shots):
         """
-        :param hits:
-        :param shots:
-        :return:
-        if last shot was sunk ship, random shot
-        if last shot was miss, random shot
-        if last shot was hit, shoots x + 1, x - 1, y + 1, y - 1
+        Shoots.
         """
         # TODO: Find boat direction (f | !f)
         # TODO: Shoot in a checkerboard fashion if random shot is required, must wait for 2 to be functional
@@ -24,97 +19,51 @@ class BattleshipBot:
         y = last[1]
         if last == "init" or hits[x][y] == 2:
             print("Блять")
-            # print("last was sunk or init")
-            # if type(x) is not str:
-                # print("hits[x][y] (%s,%s) = %s" % (x, y, hits[x][y]))
             self.tracking = False
-            # print("hits[x][y] == %s" % str(hits[x][y]))
             self.count += 1
-            # print(shots)
-            # print("Last was sunk or init")
-            target = choice(self.coords)
-            return self.shoot(target)
+            return self.shoot(choice(self.coords))
         if hits[x][y] == 1:
             print("Сука")
             self.tracking = True
             self.last_hit = [x, y]
-            # print("Lol eat my ass i hit u")
-            # print("last was hit")
-            # last shot hit but didn't sink
             a = x + 1
             b = y
-            if self.exists([a, b]):
-                # print("exists")
-                # print(self.coords)
-                # print("hits[a][b] == [%s][%s]" % (a, b))
-                if [a, b] in self.coords:
-                    # print("hits[a][b] == [%s][%s]" % (a, b))
-                    if hits[a][b] == 0:
-                        # print("hits[a][b] == [%s][%s]" % (a, b))
-                        return self.shoot([a, b])
+            if self.exists([a, b]) and [a, b] in self.coords and hits[a][b] == 0:
+                return self.shoot([a, b])
             a = x - 1
             b = y
-            if self.exists([a, b]):
-                # print("exists")
-                if [a, b] in self.coords:
-                    # print("hits[a][b] == [%s][%s]" % (a, b))
-                    if hits[a][b] == 0:
-                        # print("hits[a][b] == [%s][%s]" % (a, b))
-                        return self.shoot([a, b])
+            if self.exists([a, b]) and [a, b] in self.coords and hits[a][b] == 0:
+                return self.shoot([a, b])
             a = x
             b = y + 1
-            if self.exists([a, b]):
-                # print("exists")
-                if [a, b] in self.coords:
-                    # print("hits[a][b] == [%s][%s]" % (a, b))
-                    if hits[a][b] == 0:
-                        # print("hits[a][b] == [%s][%s]" % (a, b))
-                        return self.shoot([a, b])
+            if self.exists([a, b]) and [a, b] in self.coords and hits[a][b] == 0:
+                return self.shoot([a, b])
             a = x
             b = y - 1
-            if self.exists([a, b]):
-                # print("exists")
-                if [a, b] in self.coords:
-                    # print("hits[a][b] == [%s][%s]" % (a, b))
-                    if hits[a][b] == 0:
-                        # print("hits[a][b] == [%s][%s]" % (a, b))
-                        # print
-                        return self.shoot([a, b])
-            # print("last shot shit, shooting random...")
-            # print("Shooting random?")
+            if self.exists([a, b]) and [a, b] in self.coords and hits[a][b] == 0:
+                return self.shoot([a, b])
             return self.shoot(choice(self.coords))
         else:
-            # print("last was miss")
             if self.tracking:
-                # print("tracking...")
                 x = self.last_hit[0]
                 y = self.last_hit[1]
                 a = x + 1
                 b = y
-                if self.exists([a, b]):
-                    if hits[a][b] == 0 and [a, b] in self.coords:
-                        return self.shoot([a, b])
+                if self.exists([a, b]) and hits[a][b] == 0 and [a, b] in self.coords:
+                    return self.shoot([a, b])
                 a = x - 1
                 b = y
-                if self.exists([a, b]):
-                    if hits[a][b] == 0 and [a, b] in self.coords:
-                        return self.shoot([a, b])
+                if self.exists([a, b]) and hits[a][b] == 0 and [a, b] in self.coords:
+                    return self.shoot([a, b])
                 a = x
                 b = y + 1
-                if self.exists([a, b]):
-                    if hits[a][b] == 0 and [a, b] in self.coords:
-                        return self.shoot([a, b])
+                if self.exists([a, b]) and hits[a][b] == 0 and [a, b] in self.coords:
+                    return self.shoot([a, b])
                 a = x
                 b = y - 1
-                if self.exists([a, b]):
-                    if hits[a][b] == 0 and [a, b] in self.coords:
-                        return self.shoot([a, b])
-                # print("last shot shit, shooting random...")
-                # print("tracking failed, resulting to random")
-                target = choice(self.coords)
-            else:
-                # print("random shot...")
-                target = choice(self.coords)
+                if self.exists([a, b]) and hits[a][b] == 0 and [a, b] in self.coords:
+                    return self.shoot([a, b])
+            target = choice(self.coords)
             return self.shoot(target)
 
     def shoot(self, target):
@@ -127,7 +76,7 @@ class BattleshipBot:
 
     def get_setup(self):
         """
-        Fully random ship placements, without overlaps, within the board.
+        Places.
         """
         self.init()
         # TODO: Add gay var
@@ -175,7 +124,7 @@ class BattleshipBot:
     @staticmethod
     def check_ship_layout_validity(ships):
         """
-        Checks position of each ship in ships[] for overlaps and grid border crossing.
+        Checks.
         """
         occs = []
         ls = [5, 4, 3, 3, 2]
@@ -199,7 +148,7 @@ class BattleshipBot:
 
     def success_checker(self):
         """
-        Check success rate of get_setup().
+        Checks again.
         """
         yes = 0
         no = 0
@@ -221,8 +170,3 @@ class BattleshipBot:
         self.count = 0
         self.tracking = False
         self.last_hit = None
-
-# ships = BattleshipBot().get_setup()
-# print("ships = %s" % ships)
-
-# BattleshipBot().success_checker()
